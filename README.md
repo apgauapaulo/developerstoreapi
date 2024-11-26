@@ -1,86 +1,111 @@
-# Developer Evaluation Project
 
-`READ CAREFULLY`
+# Sales API
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+This project is an API for managing sales, including creating, updating, and canceling sales. The API supports CRUD operations and applies business rules like calculating discounts and restricting the number of items in a sale.
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+## Prerequisites
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+To run this project, you will need the following installed on your machine:
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+- [.NET SDK](https://dotnet.microsoft.com/download) (version 7.0 or higher)
+- [Postman](https://www.postman.com/downloads/) (optional, for testing the API)
+- A PostgreSQL database (for connecting to the default context)
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+## Setup
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+### Clone the Repository
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+1. Clone this repository to your local machine:
+   ```bash
+   git clone https://github.com/apgauapaulo/Ambev.DeveloperEvaluation.git
+   ```
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+### Configure the Database
 
-### Business Rules
+1. Create a PostgreSQL database instance.
+2. Update the connection string in the `appsettings.json` file:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Host=localhost;Port=5432;Username=yourusername;Password=yourpassword;Database=yourdatabase"
+   }
+   ```
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+### Run Migrations
 
-These business rules define quantity-based discounting tiers and limitations:
+Run the following command to apply database migrations:
+   ```bash
+   dotnet ef database update
+   ```
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+### Run the Application
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+To start the application, run the following command:
+   ```bash
+   dotnet run
+   ```
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+This will start the API on `https://localhost:5001` (or a different port if configured).
 
-See [Overview](/.doc/overview.md)
+## Testing the API
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+You can test the API using [Swagger UI](https://localhost:5001/swagger) or [Postman](https://www.postman.com/downloads/).
 
-See [Tech Stack](/.doc/tech-stack.md)
+### Example Endpoints
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+Here are some example API endpoints that you can use to test the application:
 
-See [Frameworks](/.doc/frameworks.md)
+#### **POST /api/Vendas**
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+Create a new sale. Sample JSON body:
+```json
+{
+  "customer": "Customer A",
+  "branch": "Branch A",
+  "items": [
+    { "productName": "Product 1", "quantity": 2, "totalAmount": 50 }
+  ]
+}
+```
 
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
+#### **GET /api/Vendas/{id}**
 
-See [Project Structure](/.doc/project-structure.md)
+Get a sale by ID.
+
+#### **PUT /api/Vendas/{id}**
+
+Update a sale. Sample JSON body:
+```json
+{
+  "customer": "Customer B",
+  "branch": "Branch B",
+  "items": [
+    { "productName": "Product 2", "quantity": 3, "totalAmount": 100 }
+  ]
+}
+```
+
+#### **DELETE /api/Vendas/{id}**
+
+Cancel a sale by ID.
+
+### Testing with Swagger UI
+
+1. Run the project with the command `dotnet run`.
+2. Open your browser and navigate to [Swagger UI](https://localhost:5001/swagger).
+3. You'll see all available endpoints listed. You can interact with each endpoint by clicking "Try it out" and sending requests directly from the UI.
+
+### Testing with Postman
+
+1. Open [Postman](https://www.postman.com/downloads/).
+2. Create a new request with the appropriate HTTP method (GET, POST, PUT, DELETE).
+3. For POST and PUT requests, include a JSON body with the necessary parameters, as shown in the examples above.
+4. Click "Send" to see the response from the API.
+
+## Error Handling
+
+- The API returns standard HTTP status codes to indicate the status of requests:
+  - `200 OK`: The request was successful.
+  - `201 Created`: The resource was successfully created.
+  - `400 Bad Request`: The request was invalid (e.g., missing or incorrect parameters).
+  - `404 Not Found`: The resource was not found.
+  - `500 Internal Server Error`: An error occurred on the server.

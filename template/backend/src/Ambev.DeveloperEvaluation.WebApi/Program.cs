@@ -9,6 +9,8 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Services;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -40,6 +42,9 @@ public class Program
 
             builder.RegisterDependencies();
 
+            // Registering the service ISaleService and SaleService
+            builder.Services.AddScoped<ISaleService, SaleService>();
+
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
 
             builder.Services.AddMediatR(cfg =>
@@ -51,6 +56,24 @@ public class Program
             });
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                // Adds the description and information about the API
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Sales API",
+                    Version = "v1",
+                    Description = "API for managing sales, including creating, updating, and canceling sales."
+                });
+
+                // Adds support for XML comments to improve documentation
+                var xmlFile = Path.Combine(AppContext.BaseDirectory, "Ambev.DeveloperEvaluation.WebApi.xml");
+                c.IncludeXmlComments(xmlFile);
+
+                // Configures Swagger to generate documentation for all routes
+                c.DescribeAllParametersInCamelCase();
+            });
 
             var app = builder.Build();
             app.UseMiddleware<ValidationExceptionMiddleware>();

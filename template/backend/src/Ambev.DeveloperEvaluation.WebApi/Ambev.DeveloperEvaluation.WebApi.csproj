@@ -8,6 +8,8 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  <DocumentationFile>bin\Debug\net7.0\Ambev.DeveloperEvaluation.WebApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
